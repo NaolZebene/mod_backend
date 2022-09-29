@@ -61,7 +61,8 @@ module.exports.Login = wrapAsync(async function (req, res) {
             const token = jwt.sign({ "login_token": userdata._id }, jsonWebTokenPrivateKey)
             req.session.token = token;
             req.session.user = userdata;
-            console.log(req.session)
+            req.session.commands = []
+            req.cookies.commands = []
             return res.json({
                 token: token,
                 msg: "Login Successful",

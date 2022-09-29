@@ -133,33 +133,27 @@ return model(status_id,statusSchema)
 
 function CreateStream(stream_id){
   const streamSchema = new Schema({
-    Temperature :[{
+    Temperature : {
        type:Number, 
-       required:true, 
-       default:0,
-       
-    }], 
-    Humudity:[{
+    }, 
+    Humudity:{
         type:Number, 
-        required:true, 
-        default:0
-    }], 
-    Voltage:[{
+    }, 
+    Voltage:{
         type:String, 
-        required:true, 
-        default:0
-    }], 
-    Current:[{
+    }, 
+    Current:{
         type:Number, 
-        required:true, 
-        default:0
-    }], 
-    Oil:[{
+    }, 
+    Oil:{
         type:Number, 
-        required:true, 
-        default:0
-    }]
-  })
+    }, 
+    Time:{
+        type:String, 
+    }
+  },{
+    timestamps:true
+})
 
   return model(stream_id,streamSchema)
 }

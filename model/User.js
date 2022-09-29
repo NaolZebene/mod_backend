@@ -23,7 +23,11 @@ const userSchema = new Schema ({
     }, 
     email:{
         type:String
-    }
+    }, 
+    command_excuted:[{
+        commandLog:String, 
+         
+    }]
 })
 
 const Users = model('Users', userSchema); 

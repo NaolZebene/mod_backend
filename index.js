@@ -1,12 +1,12 @@
 const express = require('express'); 
 const app = express(); 
 const PORT = process.env.PORT || 3000; 
-const mongodb = require('mongodb')
-const {MongoClient} = mongodb;
 const path = require('path')
 const mongoose = require('mongoose'); 
 const session = require('express-session');
-const ExpressError = require('./utils/ExpressError')
+const ExpressError = require('./utils/ExpressError'); 
+const cookieParser = require('cookie-parser');
+
 //middle wares
 const sessionConfig = {
     secret: "secret",
@@ -18,6 +18,7 @@ app.use(session(sessionConfig))
 app.use(express.urlencoded({extended:true})); 
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'/files')));
+app.use(cookieParser());
 
 
 mongoose.connect("mongodb://localhost/modOz", { useNewUrlParser: true, useUnifiedTopology: true }).then(()=>{
@@ -37,6 +38,11 @@ app.use('/schedule',scheduleRouter)
 app.use('/transformer', transformerRouter);
 app.use('/', authRouter);
 app.use('/arduino',arduinoRouter)
+
+app.use(function(req,res,next){
+    res.locals.commands = []
+    next();
+ })
 
 
 app.use("*", function (req, res, next) {
