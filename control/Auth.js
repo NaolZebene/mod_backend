@@ -27,7 +27,7 @@ module.exports.RegisterUser = wrapAsync(async function (req, res) {
             return res.json(msg)
         }
         const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
-        const insertedData = { first_name: data.firstname,last_name:data.lastname,username:data.username, email: data.email, password: hashedPassword, isAdmin: true }
+        const insertedData = { first_name: data.firstname, last_name: data.lastname, username: data.username, email: data.email, password: hashedPassword, isAdmin: true }
         const alldata = new Users(insertedData);
         await alldata.save();
         return res.json({
