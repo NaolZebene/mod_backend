@@ -11,6 +11,7 @@ const ejs = require('ejs')
 // var socketio = require('socket.io');
 // const express_Server = require('./server').expressServer
 const io = require('./server').io
+const {CommandHandler} = require('./utils/commandHandler')
 
 //middle wares
 const sessionConfig = {
@@ -18,15 +19,25 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: true,
 }
+const sessionMiddleWare = session(sessionConfig)
 
 app.set('view engine', 'ejs');
 app.path('/views', path.join(__dirname, 'views'))
 
-app.use(session(sessionConfig))
+app.use(sessionMiddleWare)
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '/files')));
 app.use(cookieParser());
+
+
+const wrap = middleware => (socket, next) => middleware(socket.request, {},next)
+io.use(wrap(sessionMiddleWare))
+
+io.use((socket,next)=>{
+    var session = socket.request.session; 
+    next();
+})
 
 
 
@@ -65,6 +76,9 @@ app.get('/', function (req, res) {
     res.render("testFile")
 })
 
+app.get('/login',function(req,res){
+    res.render('login');
+})
 
 
 app.use("*", function (req, res, next) {
@@ -85,11 +99,20 @@ app.use(function (err, req, res, next) {
 });
 
 
+
+
 io.on('connection', (socket) => {
-    console.log("socket connected index");
-    io.on('message', (message) => {
-        console.log(message)
+    console.log("socket connected index", socket.id);
+    var session = socket.request.session; 
+    console.log(session)
+    const id = "633c14f2916b6e5b314a9ff2"
+    socket.on('message', (data) => {
+        console.log(data)
+        // socket.emit('message', "this is from the server")
+        CommandHandler(data,socket,session,id)
+
     })
+    
 
 })
 

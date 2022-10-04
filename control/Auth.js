@@ -47,6 +47,7 @@ module.exports.Login = wrapAsync(async function (req, res) {
 
     if (allusers.length) {
         const data = req.body;
+        console.log(data)
         if (!(data.username && data.password)) {
             const msg = {
                 msg: "username or password cannot be empty",
@@ -56,6 +57,7 @@ module.exports.Login = wrapAsync(async function (req, res) {
         }
 
         const userdata = await Users.findOne({ username: data.username });
+        console.log(userdata)
         const decryptedPasswordResult = await bcrypt.compare(data.password, userdata.password);
         if (decryptedPasswordResult) {
             const token = jwt.sign({ "login_token": userdata._id }, jsonWebTokenPrivateKey)

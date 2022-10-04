@@ -7,20 +7,61 @@
     <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
 </head>
 <body>
-    <form action="/arduino/6338333a1d7ecd245198923e" method="post">
-        <input type="text" name="command">
+    <div style="display: block;" id="data-container"></div>
+    <form action="/" method="post" id="send-form">
+        <input type="text" name="command" id="command-id">
         <button type="submit">Enter</button>
     </form>
 
     <script>
-        const socket = io("http://localhost:3000/"); 
 
-        socket.on('connection', ()=>{
-            console.log("connection established"); 
-            socket.emit('message',{
-                payload:"this is the message"
-            })
+        const socket = io("http://localhost:3000/"); 
+        const dataForm = document.getElementById("send-form"); 
+        var messageInput = document.getElementById('command-id');
+        var dataContainer = document.getElementById('data-container')
+
+        socket.on('connection')
+
+        // const sendMessage = ()=>{
+        //     // socket.emit('message',"hello from the client side")
+        // }
+
+        socket.on('message', (data)=>{
+          appendMessage(data)
         })
+
+        dataForm.addEventListener('submit', e =>{
+            e.preventDefault()
+            const message = messageInput.value;
+            socket.emit('message', message); 
+            messageInput.value="";
+
+        }
+        )
+        function appendMessage(message){
+
+            if(typeof(message) == "object"){
+               message.forEach(one_message=>{
+                let messageElement = document.createElement('p');
+                let messageDiv = document.createElement('div'); 
+                messageElement.innerText = JSON.stringify(one_message);
+                messageDiv.append(messageElement) 
+                dataContainer.append(messageDiv)
+                console.log(one_message)
+               })
+            }else{
+            const messageElement = document.createElement('p');
+            const messageDiv = document.createElement('div'); 
+            messageElement.innerText = message;
+            messageDiv.append(messageElement) 
+            dataContainer.append(messageDiv)
+
+            }
+
+          
+
+         
+        }
 
     </script>
 </body>
