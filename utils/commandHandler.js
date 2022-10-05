@@ -7,6 +7,7 @@ const port = "COM17";
 const mongoose = require('mongoose');
 const User = require('../model/User')
 const io = require('../server').io
+const wrapAsync = require('../utils/wrapAsync')
 process.setMaxListeners(0);
 var myport = new SerialPort({
     baudRate: 9600,
@@ -16,7 +17,7 @@ const{request, response} = require('express')
 
 var parser = myport.pipe(new ReadlineParser({ delimiter: '\r\n' }))
 
-module.exports.CommandHandler = async function (command, socket,session,id) {
+module.exports.CommandHandler = wrapAsync(async function (command, socket,session,id) {
     all_commands = command.split(' ')
     let command_length = all_commands.length;
     if (command_length > 0) {
@@ -41,7 +42,7 @@ module.exports.CommandHandler = async function (command, socket,session,id) {
                 if (all_commands[1] == "-v") {
                     let command_sent = `config ${all_commands[1]}\n`;
                     myport.write(command_sent);
-                    Stream({ code: 203, command: command });
+                    Stream({ code: 203, command: command,session:session, socket:socket });
                 } else {
                     console.log(`Invalid Option ${all_commands[1]}`);
                 }
@@ -167,9 +168,9 @@ module.exports.CommandHandler = async function (command, socket,session,id) {
     }
 
 
-}
+})
 
-function Stream({ id, code, tag, command,socket , session}) {
+wrapAsync(async function Stream({ id, code, tag, command,socket , session}) {
 
 
     if (code == 200) {
@@ -226,7 +227,7 @@ function Stream({ id, code, tag, command,socket , session}) {
     } else if (code == 203) {
         parser.on('data', async function (data) {
             let stream = data;
-            console.log(stream);
+            // console.log(stream);
             // console.log(req.session)
             const user = await User.findOne({ _id: session.user._id });
             const new_log = new commandLog({
@@ -293,7 +294,7 @@ function Stream({ id, code, tag, command,socket , session}) {
         })
     }
 
-}
+})
 
 function checkArduino() {
     return 1;

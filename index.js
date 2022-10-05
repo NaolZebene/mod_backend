@@ -52,14 +52,15 @@ mongoose.connect("mongodb://localhost/modOz", { useNewUrlParser: true, useUnifie
 const transformerRouter = require('./router/TransformerRoute');
 const authRouter = require('./router/AuthRouter');
 const scheduleRouter = require('./router/ScheduleRoute');
-const arduinoRouter = require('./router/ArduinoRoute')
+const arduinoRouter = require('./router/ArduinoRoute')(io);
 const userRouter = require('./router/UserRoute');
 const streamRouter = require('./router/stream_datas');
+
 
 app.use('/schedule', scheduleRouter)
 app.use('/transformer', transformerRouter);
 app.use('/', authRouter);
-app.use('/arduino', arduinoRouter)
+app.use('/', arduinoRouter)
 app.use('/users', userRouter);
 app.use('/stream', streamRouter);
 
@@ -103,15 +104,13 @@ app.use(function (err, req, res, next) {
 
 io.on('connection', (socket) => {
     console.log("socket connected index", socket.id);
-    var session = socket.request.session; 
-    console.log(session)
-    const id = "633c14f2916b6e5b314a9ff2"
-    socket.on('message', (data) => {
-        console.log(data)
-        // socket.emit('message', "this is from the server")
-        CommandHandler(data,socket,session,id)
+    // var session = socket.request.session; 
+    // socket.on('message', (data) => {
+    //     console.log(data)
+    //     // socket.emit('message', "this is from the server")
+    //     // CommandHandler(data,socket,session,id)
 
-    })
+    // })
     
 
 })

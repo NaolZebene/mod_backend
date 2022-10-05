@@ -1,24 +1,18 @@
-const wrapAsync = require('../utils/wrapAsync');
-const { CommandHandler } = require('../utils/commandHandler');
-const commandLog = require('../model/commandLogs');
-const Users = require('../model/User')
-const { io } = require('../server')
+const express = require('express'); 
 
-// const fs = require('fs');
-var fs = require('fs');
+function SocketRouter(io){
+   const router = express.Router(); 
 
-module.exports.CommandRequest = (async function (req, res) {
-   const { id } = req.params;
-   const command = req.body.command;
-   console.log(command)
-   // try {
-   //    io.on('connection', (socket) => {
-   //       console.log("socket communication established");
-   //    })
+   router.post('/arduoino/:id', (req,res)=>{
+      const {id} = req.params; 
+      console.log(id);
 
-   // } catch (err) {
-   //    console.log(err)
-   // }
-   // CommandHandler(command, id, req, res);
+      io.emit('message',(data)=>{
+         console.log(data);
+      })
+      
+      
+   })
+}
 
-})
+module.exports = SocketRouter;

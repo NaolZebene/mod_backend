@@ -7,11 +7,12 @@
     <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
 </head>
 <body>
-    <div style="display: block;" id="data-container"></div>
-    <form action="/" method="post" id="send-form">
+    <form action="/arduino/633c14f2916b6e5b314a9ff2" method="post" id="send-form">
         <input type="text" name="command" id="command-id">
         <button type="submit">Enter</button>
     </form>
+    <div style="display: block;" id="data-container"></div>
+  
 
     <script>
 
@@ -22,22 +23,23 @@
 
         socket.on('connection')
 
-        // const sendMessage = ()=>{
-        //     // socket.emit('message',"hello from the client side")
-        // }
+        const sendMessage = ()=>{
+            // socket.emit('message',"hello from the client side")
+        }
 
         socket.on('message', (data)=>{
-          appendMessage(data)
+        //   appendMessage(data)
+        console.log(data)
         })
 
-        dataForm.addEventListener('submit', e =>{
-            e.preventDefault()
-            const message = messageInput.value;
-            socket.emit('message', message); 
-            messageInput.value="";
+        // dataForm.addEventListener('submit', e =>{
+        //     e.preventDefault()
+        //     const message = messageInput.value;
+        //     socket.emit('message', message); 
+        //     messageInput.value="";
 
-        }
-        )
+        // }
+        // )
         function appendMessage(message){
 
             if(typeof(message) == "object"){

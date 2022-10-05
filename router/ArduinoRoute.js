@@ -1,11 +1,16 @@
-const router = require('express').Router();
-const arduinoController = require('../control/ArduinoStream');
-const { isLoggedIn } = require('../utils/isLoggedIn')
-const io = require('../server').io
-router.post('/:id', arduinoController.CommandRequest)
+const express = require('express'); 
 
-// io.on('connection', (socket) => {
-//     console.log("connected socket")
-// })
+function SocketRouter(io){
+   const router = express.Router(); 
 
-module.exports = router;
+   router.get('/arduino', (req,res)=>{
+
+      const count = req.query.count
+      
+   })
+
+   
+   return router;
+}
+
+module.exports = SocketRouter;
