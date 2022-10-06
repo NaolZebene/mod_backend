@@ -5,8 +5,15 @@ function SocketRouter(io){
 
    router.get('/arduino', (req,res)=>{
 
-      const count = req.query.count
-      
+      const count = req.query.count; 
+      if(!count){
+         return res.json({
+            message:"count doesnt exist"
+         })
+      }
+
+      io.emit('message',count)
+   
    })
 
    

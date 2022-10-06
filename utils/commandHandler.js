@@ -19,6 +19,7 @@ var parser = myport.pipe(new ReadlineParser({ delimiter: '\r\n' }))
 
 module.exports.CommandHandler = wrapAsync(async function (command, socket,session,id) {
     all_commands = command.split(' ')
+    console.log("inside command hanlder", id)
     let command_length = all_commands.length;
     if (command_length > 0) {
         if (command_length == 1) {
@@ -127,7 +128,8 @@ module.exports.CommandHandler = wrapAsync(async function (command, socket,sessio
             if (all_commands[0] == "stream") {
                 if (all_commands[1] == "-a") {
                     if (all_commands[2] == "s") {
-                        // console.log("inside stream")
+                        console.log("inside stream")
+                        console.log("inside", id)
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]} ${all_commands[4]}\n`
                         myport.write(command_sent);
                         Stream({ id: id, code: 200,command: command,session:session , socket:socket});
@@ -170,7 +172,7 @@ module.exports.CommandHandler = wrapAsync(async function (command, socket,sessio
 
 })
 
-wrapAsync(async function Stream({ id, code, tag, command,socket , session}) {
+ function Stream({ id, code, tag, command,socket , session}) {
 
 
     if (code == 200) {
@@ -187,21 +189,22 @@ wrapAsync(async function Stream({ id, code, tag, command,socket , session}) {
                 Time: new Date().toJSON()
             }]
             const collection_id = await all_models.ListingTable.findOne({ transformer_id: id });
+            console.log("this is id",id)
             //   console.log(req.session);
             // console.log(collection_id)
-            const inserted_data = await mongoose.connection.db.collection(collection_id.streamed_data).insertMany(stream_datas, { ordered: true });
-            // console.log(typeof(stream_datas))
-            count = 0 ; 
-            if(count == 0){
-                const user = await User.findOne({ _id: session.user._id })
-                const new_log = new commandLog({ command: command, command_status: 1, timeStamp: new Date().toJSON(), userSent: user._id })
-                await new_log.save();
-                user.command_excuted.push(new_log._id);
-                await user.save();
-                count++
-            }
+            // const inserted_data = await mongoose.connection.db.collection(collection_id.streamed_data).insertMany(stream_datas, { ordered: true });
+            // // console.log(typeof(stream_datas))
+            // count = 0 ; 
+            // if(count == 0){
+            //     const user = await User.findOne({ _id: session.user._id })
+            //     const new_log = new commandLog({ command: command, command_status: 1, timeStamp: new Date().toJSON(), userSent: user._id })
+            //     await new_log.save();
+            //     user.command_excuted.push(new_log._id);
+            //     await user.save();
+            //     count++
+            // }
             // console.log(inserted_data)
-            socket.emit('message', inserted_data)
+            // socket.emit('message', inserted_data)
            
 
         })
@@ -227,7 +230,7 @@ wrapAsync(async function Stream({ id, code, tag, command,socket , session}) {
     } else if (code == 203) {
         parser.on('data', async function (data) {
             let stream = data;
-            // console.log(stream);
+            console.log(stream);
             // console.log(req.session)
             const user = await User.findOne({ _id: session.user._id });
             const new_log = new commandLog({
@@ -294,7 +297,7 @@ wrapAsync(async function Stream({ id, code, tag, command,socket , session}) {
         })
     }
 
-})
+}
 
 function checkArduino() {
     return 1;

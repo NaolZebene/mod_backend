@@ -28,18 +28,17 @@
         }
 
         socket.on('message', (data)=>{
-        //   appendMessage(data)
+          appendMessage(data)
         console.log(data)
         })
 
-        // dataForm.addEventListener('submit', e =>{
-        //     e.preventDefault()
-        //     const message = messageInput.value;
-        //     socket.emit('message', message); 
-        //     messageInput.value="";
-
-        // }
-        // )
+        dataForm.addEventListener('submit', e =>{
+            e.preventDefault()
+            const message = messageInput.value;
+            socket.emit('message', message); 
+            messageInput.value="";
+        }
+        )
         function appendMessage(message){
 
             if(typeof(message) == "object"){
