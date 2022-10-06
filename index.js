@@ -105,13 +105,13 @@ app.use(function (err, req, res, next) {
 io.on('connection', (socket) => {
     console.log("socket connected index", socket.id);
     var session = socket.request.session; 
-    var id = "633c14f2916b6e5b314a9ff2"
-    console.log("inside io id", id)
+    
+    // console.log("inside io id", id)
     socket.on('message', (data) => {
         // console.log(data)
         // socket.emit('message', "this is from the server")
        
-        CommandHandler(data,socket,session,id)
+        CommandHandler({id:"633c14f2916b6e5b314a9ff2",socket:socket,session:session,command:data})
 
     })
     

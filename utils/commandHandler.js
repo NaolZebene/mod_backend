@@ -17,9 +17,10 @@ const{request, response} = require('express')
 
 var parser = myport.pipe(new ReadlineParser({ delimiter: '\r\n' }))
 
-module.exports.CommandHandler = wrapAsync(async function (command, socket,session,id) {
+module.exports.CommandHandler = wrapAsync(async function ({id, socket,session,command}) {
     all_commands = command.split(' ')
-    console.log("inside command hanlder", id)
+    // console.log(command)
+    // console.log("inside command hanlder", id)
     let command_length = all_commands.length;
     if (command_length > 0) {
         if (command_length == 1) {
@@ -189,22 +190,22 @@ module.exports.CommandHandler = wrapAsync(async function (command, socket,sessio
                 Time: new Date().toJSON()
             }]
             const collection_id = await all_models.ListingTable.findOne({ transformer_id: id });
-            console.log("this is id",id)
+            // console.log("this is id",id)
             //   console.log(req.session);
-            // console.log(collection_id)
-            // const inserted_data = await mongoose.connection.db.collection(collection_id.streamed_data).insertMany(stream_datas, { ordered: true });
-            // // console.log(typeof(stream_datas))
-            // count = 0 ; 
-            // if(count == 0){
-            //     const user = await User.findOne({ _id: session.user._id })
-            //     const new_log = new commandLog({ command: command, command_status: 1, timeStamp: new Date().toJSON(), userSent: user._id })
-            //     await new_log.save();
-            //     user.command_excuted.push(new_log._id);
-            //     await user.save();
-            //     count++
-            // }
-            // console.log(inserted_data)
-            // socket.emit('message', inserted_data)
+            console.log(collection_id)
+            const inserted_data = await mongoose.connection.db.collection(collection_id.streamed_data).insertMany(stream_datas, { ordered: true });
+            // console.log(typeof(stream_datas))
+            count = 0 ; 
+            if(count == 0){
+                const user = await User.findOne({ _id: session.user._id })
+                const new_log = new commandLog({ command: command, command_status: 1, timeStamp: new Date().toJSON(), userSent: user._id })
+                await new_log.save();
+                user.command_excuted.push(new_log._id);
+                await user.save();
+                count++
+            }
+            console.log(inserted_data)
+            socket.emit('message', stream_datas)
            
 
         })
