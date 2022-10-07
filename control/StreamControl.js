@@ -15,29 +15,39 @@ module.exports.getAllStream = wrapAsync(async function (req, res) {
     })
 })
 
-module.exports.getWeekAverage = wrapAsync(async function (req, res) {
+module.exports.getDataInRange = wrapAsync(async function (req, res) {
     const {id} = req.params; 
     const incoming_request = req.body; 
 
-    if(!(incoming_request.Date_One && incomingDate.Date_Two)){
+    if(!(incoming_request.DateOne && incoming_request.DateTwo)){
         return res.json({
             msg:"All inputs are required"
         })
     }
 
-    const incomingDate = new Date(incoming_request.Date); 
+    const incomingDateOne = new Date(incoming_request.DateOne);
+    const incomingDateTwo = new Date(incoming_request.DateTwo);
+    const final_result = []
+
+    
     const filtered_data = []
     const collection_data = await allmodels.ListingTable.findOne({transformer_id:id}); 
     const all_stream_history = await mongoose.connection.db.collection(collection_data.streamed_data).find().toArray(); 
     all_stream_history.forEach(data=>{
         if(data.Time  != undefined){
-            let date = new Date(data.Time); 
-       
+            let date = new Date(data.Time);       
+            if(date >= incomingDateOne && date < incomingDateTwo){
+                final_result.push(data);
+            }
+            
         }
     })
 
-    // const now = new Date()
-    // console.log("now",now.getDate())
+    return res.json({
+        paylaod:final_result, 
+        status : 200
+    })
+
 
 })
 
