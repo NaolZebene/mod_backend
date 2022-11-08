@@ -11,7 +11,7 @@ module.exports.RegisterUser = wrapAsync(async function (req, res) {
     const availableUser = await Users.find();
     if (availableUser.length == 0) {
         const data = req.body;
-        if (!(data.firstname && data.lastname && data.username && data.confirmpassword && data.password)) {
+        if (!(data.firstname && data.lastname && data.username && data.confirmpassword && data.password && data.email)) {
             const msg = {
                 msg: "All inputs are required",
                 status: 401
@@ -30,10 +30,15 @@ module.exports.RegisterUser = wrapAsync(async function (req, res) {
         const insertedData = { first_name: data.firstname, last_name: data.lastname, username: data.username, email: data.email, password: hashedPassword, isAdmin: true }
         const alldata = new Users(insertedData);
         await alldata.save();
+        const token = jwt.sign({"login_token":alldata._id},jsonWebTokenPrivateKey);
+        req.session.token = token
+        console.log(req.session)
         return res.json({
-            msg: "Registerd Successfully",
+            msg:"Registered Successfully",
+            token: token,
             status: 200
         })
+   
     } else {
         return res.json({
             msg: "Cant Register more than one admin",
@@ -44,9 +49,9 @@ module.exports.RegisterUser = wrapAsync(async function (req, res) {
 
 module.exports.Login = wrapAsync(async function (req, res) {
     const allusers = await Users.find()
-
     if (allusers.length) {
-        const data = req.body;
+        const data = req.body.values;
+        console.log(data)
         if (!(data.username && data.password)) {
             const msg = {
                 msg: "username or password cannot be empty",
@@ -56,6 +61,12 @@ module.exports.Login = wrapAsync(async function (req, res) {
         }
 
         const userdata = await Users.findOne({ username: data.username });
+        if(!userdata){
+            return res.json({
+                msg:"No such user", 
+                status:401
+            })
+        }
         const decryptedPasswordResult = await bcrypt.compare(data.password, userdata.password);
         if (decryptedPasswordResult) {
             const token = jwt.sign({ "login_token": userdata._id }, jsonWebTokenPrivateKey)

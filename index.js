@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors')
 // const app = express();
 const app = require('./server').app
 // const PORT = process.env.PORT || 3000;
@@ -11,8 +12,8 @@ const ejs = require('ejs')
 // var socketio = require('socket.io');
 // const express_Server = require('./server').expressServer
 const io = require('./server').io
-const { CommandHandler } = require('./utils/commandHandler')
-const { isLoggedIn } = require('../utils/isLoggedIn')
+// const { CommandHandler } = require('./utils/commandHandler')
+const { isLoggedIn } = require('./utils/isLoggedIn')
 
 //middle wares
 const sessionConfig = {
@@ -30,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '/files')));
 app.use(cookieParser());
-
+app.use(cors())
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next)
 io.use(wrap(sessionMiddleWare))
