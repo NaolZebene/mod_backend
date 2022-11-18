@@ -132,6 +132,7 @@ app.post('/sendcommand', async (req, res) => {
 
         }
     }
+    console.log("DONE")
 })
 
 app.post('/recievedata', async (req, res) => {
@@ -163,14 +164,28 @@ app.post('/recievedata', async (req, res) => {
         await mongoose.connection.db.collection(data_exists.command_to_read).insertOne(inserted_data);
         await mongoose.connection.db.collection(data_exists.command_to_write).remove({ _id: mongoose.Types.ObjectId(newres[0]) });
 
-
-
-
-
-
     }
 })
 
+app.get('/getcommand/:id', async (req, res) => {
+
+    const { id } = req.params;
+    const all_collection = await allmodels.ListingTable.findOne({ transformer_id: id });
+
+    if (!all_collection) {
+        return res.send(404);
+    }
+
+    const all_commands = await mongoose.connection.db.collection(all_collection.command_to_write).find().toArray();
+    let command_sent = [];
+    for (let command of all_commands) {
+        let new_command = [String(command._id), command.Command];
+        command_sent.push(new_command);
+    }
+
+    res.send(command_sent)
+
+})
 
 
 
