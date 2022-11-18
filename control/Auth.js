@@ -30,15 +30,15 @@ module.exports.RegisterUser = wrapAsync(async function (req, res) {
         const insertedData = { first_name: data.firstname, last_name: data.lastname, username: data.username, email: data.email, password: hashedPassword, isAdmin: true }
         const alldata = new Users(insertedData);
         await alldata.save();
-        const token = jwt.sign({"login_token":alldata._id},jsonWebTokenPrivateKey);
+        const token = jwt.sign({ "login_token": alldata._id }, jsonWebTokenPrivateKey);
         req.session.token = token
         console.log(req.session)
         return res.json({
-            msg:"Registered Successfully",
+            msg: "Registered Successfully",
             token: token,
             status: 200
         })
-   
+
     } else {
         return res.json({
             msg: "Cant Register more than one admin",
@@ -50,7 +50,7 @@ module.exports.RegisterUser = wrapAsync(async function (req, res) {
 module.exports.Login = wrapAsync(async function (req, res) {
     const allusers = await Users.find()
     if (allusers.length) {
-        const data = req.body.values;
+        const data = req.body;
         console.log(data)
         if (!(data.username && data.password)) {
             const msg = {
@@ -61,10 +61,10 @@ module.exports.Login = wrapAsync(async function (req, res) {
         }
 
         const userdata = await Users.findOne({ username: data.username });
-        if(!userdata){
+        if (!userdata) {
             return res.json({
-                msg:"No such user", 
-                status:401
+                msg: "No such user",
+                status: 401
             })
         }
         const decryptedPasswordResult = await bcrypt.compare(data.password, userdata.password);

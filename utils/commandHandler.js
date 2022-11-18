@@ -1,50 +1,49 @@
-const serialport = require('serialport');
 const commandLog = require('../model/commandLogs');
-const SerialPort = serialport.SerialPort;
-const { ReadlineParser } = require('@serialport/parser-readline')
 const all_models = require('../model/models')
-const port = "COM17";
 const mongoose = require('mongoose');
 const User = require('../model/User')
 const io = require('../server').io
 const wrapAsync = require('../utils/wrapAsync')
 process.setMaxListeners(0);
-var myport = new SerialPort({
-    baudRate: 9600,
-    path: port
-})
-const { request, response } = require('express')
 
-var parser = myport.pipe(new ReadlineParser({ delimiter: '\r\n' }))
 
 module.exports.CommandHandler = wrapAsync(async function ({ id, socket, session, command }) {
+    console.log(command);
     all_commands = command.split(' ')
+
     // console.log(command)
     // console.log("inside command hanlder", id)
     let command_length = all_commands.length;
     if (command_length > 0) {
-        if (command_length == 1) {
+        if (command_length == 2) {
             if (all_commands[0] == "ping") {
-                myport.write("ping\n")
-                Stream({ code: 203, command: command, socket: socket, session: session });
+                console.log("splitted", all_commands)
+                // myport.write("ping\n")
+                // Stream({ code: 203, command: command, socket: socket, session: session });
+
+                return all_commands
             } else if (all_commands[0] == "startup") {
-                myport.write("startup\n")
-                Stream({ code: 204, command: command, session: session, socket: socket });
+                // myport.write("startup\n")
+                // Stream({ code: 204, command: command, session: session, socket: socket });
+                return allcommands
             } else if (all_commands[0] == "shutdown") {
-                myport.write("shutdown\n")
-                Stream({ code: 204, command: command, session: session, socket: socket });
+                // myport.write("shutdown\n")
+                // Stream({ code: 204, command: command, session: session, socket: socket });
+                return allcommands
+            } else {
+                return false
             }
         }
-        else if (command_length == 2) {
+        else if (command_length == 3) {
             if (all_commands[0] == "bcast") {
                 let command_sent = `bcast ${all_commands}\n`
-                myport.write(command_sent);
-                Stream({ id });
+                // myport.write(command_sent);
+                // Stream({ id });
             } else if (all_commands[0] == "config") {
                 if (all_commands[1] == "-v") {
                     let command_sent = `config ${all_commands[1]}\n`;
-                    myport.write(command_sent);
-                    Stream({ code: 203, command: command, session: session, socket: socket });
+                    // myport.write(command_sent);
+                    // Stream({ code: 203, command: command, session: session, socket: socket });
                 } else {
                     console.log(`Invalid Option ${all_commands[1]}`);
                 }
@@ -56,64 +55,64 @@ module.exports.CommandHandler = wrapAsync(async function ({ id, socket, session,
                 if (all_commands[1] == "-u") {
                     if (all_commands[2] == "Tmin") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Tmax") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Tsh") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Vmin") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Vmax") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Vsh") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Cmin") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204 });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204 });
                     } else if (all_commands[2] == "Cmax") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Csh") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Hmin") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Hmax") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Hsh") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Omim") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Omax") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else if (all_commands[2] == "Osh") {
                         let command_sent = `${all_commands[0]} ${all_commands[1]} ${all_commands[2]} ${all_commands[3]}\n`
-                        myport.write(command_sent);
-                        Stream({ id: id, code: 204, command: command, session: session, socket: socket });
+                        // myport.write(command_sent);
+                        // Stream({ id: id, code: 204, command: command, session: session, socket: socket });
                     } else {
                         console.log(`Invalid parameter ${all_commands[2]}`)
                     }
