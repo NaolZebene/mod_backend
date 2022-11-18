@@ -95,8 +95,20 @@ app.get('/login', function (req, res) {
 
 
 
-app.get('/sendcommand', (req, res) => {
-    res.render("testFile")
+// app.get('/sendcommand', (req, res) => {
+//     res.render("testFile")
+// })
+
+
+app.get('/sendcommand', async (req, res) => {
+    let data = {
+        msg: "Use /sendcommand to send as a POST and /recievedata to get commands as a POST ",
+        status: 2000
+    }
+
+    return res.json(data)
+
+
 })
 
 app.post('/sendcommand', async (req, res) => {
