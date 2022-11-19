@@ -189,6 +189,8 @@ app.get('/getcommand/:id', async (req, res) => {
 
 app.get('/arduinocommand', async (req, res) => {
     // console.log(req.query);
+    console.log("COMMAND RECIEVED");
+    console.log(req.query)
     const { command } = req.query;
     const all_data = command.split("#")
     // console.log(all_data)
@@ -220,10 +222,8 @@ app.get('/arduinocommand', async (req, res) => {
         await mongoose.connection.db.collection(data_exists.command_to_read).insertOne(inserted_data);
         await mongoose.connection.db.collection(data_exists.command_to_write).remove({ _id: mongoose.Types.ObjectId(newres[0]) });
 
-        res.json({
-            msg: "Data recived Sucess",
-            status: 200
-        })
+        res.send("OK");
+
 
     }
 })
