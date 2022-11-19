@@ -187,6 +187,47 @@ app.get('/getcommand/:id', async (req, res) => {
 
 })
 
+app.get('/arduinocommand', async (req, res) => {
+    // console.log(req.query);
+    const { command } = req.query;
+    const all_data = command.split("#")
+    // console.log(all_data)
+
+    for (let response of all_data) {
+        let newres = response.split(',')
+        // console.log(newres);
+        const data_exists = await allmodels.ListingTable.findOne({ transformer_id: mongoose.Types.ObjectId(newres[3]) });
+        if (!data_exists) {
+            return res.json({
+                msg: "Wrong transformer id"
+            });
+
+        }
+
+        const command_model = await mongoose.connection.db.collection(data_exists.command_to_write)
+        const command_exits = await command_model.findOne({ _id: mongoose.Types.ObjectId(newres[0]) })
+
+        if (!command_exits) {
+            return res.json({ msg: "Wrong command id" })
+        }
+
+        let inserted_data = {
+            Command: command_exits.command,
+            command_status: newres[2],
+            response: newres[1]
+        }
+
+        await mongoose.connection.db.collection(data_exists.command_to_read).insertOne(inserted_data);
+        await mongoose.connection.db.collection(data_exists.command_to_write).remove({ _id: mongoose.Types.ObjectId(newres[0]) });
+
+        res.json({
+            msg: "Data recived Sucess",
+            status: 200
+        })
+
+    }
+})
+
 
 
 
