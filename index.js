@@ -140,7 +140,7 @@ app.post('/recievedata', async (req, res) => {
     const all_data = data.data.split("#")
     for (let response of all_data) {
         let newres = response.split(',')
-        const data_exists = await allmodels.ListingTable.findOne({ transformer_id: newres[3] });
+        const data_exists = await allmodels.ListingTable.findOne({ transformer_id: mongoose.Types.ObjectId(newres[3]) });
         if (!data_exists) {
             return res.json({
                 msg: "Wrong transformer id"
@@ -186,6 +186,8 @@ app.get('/getcommand/:id', async (req, res) => {
     res.send(command_sent)
 
 })
+
+
 
 
 
