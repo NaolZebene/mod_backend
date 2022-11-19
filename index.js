@@ -183,7 +183,7 @@ app.get('/getcommand/:id', async (req, res) => {
         command_sent.push(new_command);
     }
 
-    res.send(command_sent)
+    res.send("Hello from server")
 
 })
 
